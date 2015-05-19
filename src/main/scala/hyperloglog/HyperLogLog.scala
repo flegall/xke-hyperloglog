@@ -19,9 +19,8 @@ class HyperLogLog(numBucketBits: Int) {
   }
 
   def add(hashcode: Int): Unit = {
-    val hash = absoluteValue(hashcode)
-    val bucketIndex = computeBucketIndex(hash)
-    val bucketHash = computeBucketHash(hash)
+    val bucketIndex = computeBucketIndex(hashcode)
+    val bucketHash = computeBucketHash(hashcode)
     val leadZeros = computeNumberOfLeadingZeros(bucketHash)
 
     buckets(bucketIndex) = max(leadZeros, buckets(bucketIndex))
@@ -29,14 +28,12 @@ class HyperLogLog(numBucketBits: Int) {
     count += 1
   }
 
-  private[hyperloglog] def absoluteValue(hash: Int) : Int = Math.abs(hash)
-
   private[hyperloglog] def computeBucketIndex(hash: Int): Int = {
-    hash >> (Integer.SIZE - numBucketBits)
+    hash & (bucketCount - 1)
   }
 
   private[hyperloglog] def computeBucketHash(hash: Int): Int = {
-    hash << numBucketBits | (bucketCount - 1)
+    hash >> numBucketBits
   }
 
   private[hyperloglog] def computeNumberOfLeadingZeros(bucketHash: Int): Int =

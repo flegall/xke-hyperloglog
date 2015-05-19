@@ -17,31 +17,31 @@ class HyperLogLog_AddingSpec extends FunSpec with Matchers with BeforeAndAfterEa
       log.count shouldBe 1
     }
 
-    it("should compute an absolute value for the hash") {
-      log.absoluteValue(-4) shouldBe 4
-      log.absoluteValue(4) shouldBe 4
-    }
-
     it("should compute the bucket index") {
-      0 to 23 foreach { n =>
-        log.computeBucketIndex(n) shouldBe 0
+      0 until 256 foreach { n =>
+        log.computeBucketIndex(n) shouldBe n
       }
-
-      log.computeBucketIndex(1 << 24) shouldBe 1
-      log.computeBucketIndex(1 << 25) shouldBe 2
-      log.computeBucketIndex(1 << 26) shouldBe 4
-      log.computeBucketIndex(1 << 27) shouldBe 8
-
-      log.computeBucketIndex((1 << 24) + (1 << 25)) shouldBe 3
-      log.computeBucketIndex((1 << 24) + (1 << 25) + (1 << 26)) shouldBe 7
+      256 until 512 foreach { n =>
+        log.computeBucketIndex(n) shouldBe n - 256
+      }
+      512 until 768 foreach { n =>
+        log.computeBucketIndex(n) shouldBe n - 512
+      }
+      // Well, you get the cycle :)
     }
 
     it("should compute the hash within a bucket") {
-      // It also should work above :)
-      0 to 1337 foreach { n =>
-        // 255 == (1 << 8) -1
-        log.computeBucketHash(n) & 255 shouldBe 255
-        log.computeBucketHash(n) >> 8 shouldBe n
+      0 until 256 foreach { n =>
+        log.computeBucketHash(n) shouldBe 0
+      }
+      256 until 512 foreach { n =>
+        log.computeBucketHash(n) shouldBe 1
+      }
+      512 until 768 foreach { n =>
+        log.computeBucketHash(n) shouldBe 2
+      }
+      768 until 1024 foreach { n =>
+        log.computeBucketHash(n) shouldBe 3
       }
     }
 
@@ -50,39 +50,38 @@ class HyperLogLog_AddingSpec extends FunSpec with Matchers with BeforeAndAfterEa
       log.computeNumberOfLeadingZeros(1) shouldBe 31
       log.computeNumberOfLeadingZeros(2) shouldBe 30
       // and so on...
-      0 to 31 foreach { n =>
+      0 until 32 foreach { n =>
         log.computeNumberOfLeadingZeros(1 << n) shouldBe 31 - n
       }
     }
 
     it("should store the leading zeros count to the first bucket") {
-      log.add(1)
+      log.add(0)
 
-      log.buckets(0) shouldBe 23
-      1 until log.bucketCount foreach { n =>
-        log.buckets(n) shouldBe 0
+      0 until log.bucketCount foreach {
+        case n@0 => log.buckets(n) should be > 0
+        case n => log.buckets(n) shouldBe 0
       }
     }
 
     it("should store the leading zeros count to the second bucket") {
-      log.add(2 + (1 << 24))
+      log.add(1)
 
-      log.buckets(0) shouldBe 0
-      log.buckets(1) shouldBe 22
-      2 until log.bucketCount foreach { n =>
-        log.buckets(n) shouldBe 0
+      0 until log.bucketCount foreach {
+        case n@1 => log.buckets(n) should be > 0
+        case n => log.buckets(n) shouldBe 0
       }
     }
 
     it("should keep the maximum leading zeros when inserting multiple items in a bucket") {
-      log.add(1)
-      log.buckets(0) shouldBe 23
+      log.add(256)
+      log.buckets(0) shouldBe 31
 
-      log.add(2)
-      log.buckets(0) shouldBe 23
+      log.add(512)
+      log.buckets(0) shouldBe 31
 
       log.add(0)
-      log.buckets(0) shouldBe 24
+      log.buckets(0) shouldBe 32
     }
   }
 }
