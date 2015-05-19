@@ -54,5 +54,35 @@ class HyperLogLog_AddingSpec extends FunSpec with Matchers with BeforeAndAfterEa
         log.computeNumberOfLeadingZeros(1 << n) shouldBe 31 - n
       }
     }
+
+    it("should store the leading zeros count to the first bucket") {
+      log.add(1)
+
+      log.buckets(0) shouldBe 23
+      1 until log.bucketCount foreach { n =>
+        log.buckets(n) shouldBe 0
+      }
+    }
+
+    it("should store the leading zeros count to the second bucket") {
+      log.add(2 + (1 << 24))
+
+      log.buckets(0) shouldBe 0
+      log.buckets(1) shouldBe 22
+      2 until log.bucketCount foreach { n =>
+        log.buckets(n) shouldBe 0
+      }
+    }
+
+    it("should keep the maximum leading zeros when inserting multiple items in a bucket") {
+      log.add(1)
+      log.buckets(0) shouldBe 23
+
+      log.add(2)
+      log.buckets(0) shouldBe 23
+
+      log.add(0)
+      log.buckets(0) shouldBe 24
+    }
   }
 }
