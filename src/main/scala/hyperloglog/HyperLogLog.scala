@@ -1,7 +1,7 @@
 package hyperloglog
 
 import java.lang.Integer.numberOfLeadingZeros
-import java.lang.Math.log
+import java.lang.Math.{max, log}
 
 class HyperLogLog(numBucketBits: Int) {
   val bucketCount = 1 << numBucketBits
@@ -14,15 +14,17 @@ class HyperLogLog(numBucketBits: Int) {
 
   val biasCorrection = 1.0 / (2.0 * log(2) * (1.0 + (3.0 * log(2) - 1) / bucketCount))
 
-  def add(item: Any) = {
-    val hash = absoluteValue(item.hashCode)
+  def add(item: Any): Unit =  {
+    add(item.hashCode)
+  }
+
+  def add(hashcode: Int): Unit = {
+    val hash = absoluteValue(hashcode)
     val bucketIndex = computeBucketIndex(hash)
     val bucketHash = computeBucketHash(hash)
     val leadZeros = computeNumberOfLeadingZeros(bucketHash)
 
-    if (leadZeros > buckets(bucketIndex)) {
-      buckets(bucketIndex) = leadZeros
-    }
+    buckets(bucketIndex) = max(leadZeros, buckets(bucketIndex))
 
     count += 1
   }
