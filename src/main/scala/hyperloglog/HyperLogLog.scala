@@ -21,7 +21,7 @@ class HyperLogLog(numBucketBits: Int) {
     val leadZeros = computeNumberOfLeadingZeros(bucketHash)
 
     if (leadZeros > buckets(bucketIndex)) {
-      buckets(bucketIndex) = leadZeros;
+      buckets(bucketIndex) = leadZeros
     }
 
     count += 1
