@@ -1,0 +1,11 @@
+# Compiled source 
+*.class
+*.jar
+target
+
+# Idea
+.idea
+*.iml
+
+# Mac stuff
+.DS_Store
