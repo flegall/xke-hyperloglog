@@ -1,6 +1,6 @@
 package hyperloglog
 
-import com.google.common.hash.Hashing.murmur3_32
+import com.google.common.hash.Hashing
 import org.scalatest.{BeforeAndAfterEach, FunSpec, Matchers}
 
 import scala.util.Random
@@ -21,7 +21,7 @@ class HyperLogLog_CountSpec extends FunSpec with Matchers with BeforeAndAfterEac
       val random = new Random()
       0 to universeSize foreach { n =>
         val randomInt = random.nextInt(cardinality)
-        val hashedInt = murmur3_32().hashInt(randomInt).asInt()
+        val hashedInt = Hashing.murmur3_128().hashInt(randomInt).asLong()
         log.add(hashedInt)
       }
       print(log.uniqueCount)

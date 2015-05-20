@@ -12,7 +12,7 @@ class HyperLogLog_AddingSpec extends FunSpec with Matchers with BeforeAndAfterEa
   describe("When adding an element to an HyperLogLog") {
 
     it("should add something") {
-      log.add("something")
+      log.add("something".hashCode)
 
       log.count shouldBe 1
     }
@@ -46,12 +46,12 @@ class HyperLogLog_AddingSpec extends FunSpec with Matchers with BeforeAndAfterEa
     }
 
     it("should compute the number of leading zeros") {
-      log.computeNumberOfLeadingZeros(0) shouldBe 32
-      log.computeNumberOfLeadingZeros(1) shouldBe 31
-      log.computeNumberOfLeadingZeros(2) shouldBe 30
+      log.computeNumberOfLeadingZeros(0) shouldBe 64
+      log.computeNumberOfLeadingZeros(1) shouldBe 63
+      log.computeNumberOfLeadingZeros(2) shouldBe 62
       // and so on...
-      0 until 32 foreach { n =>
-        log.computeNumberOfLeadingZeros(1 << n) shouldBe 31 - n
+      0 until 64 foreach { n =>
+        log.computeNumberOfLeadingZeros(1L << n) shouldBe 63 - n
       }
     }
 
@@ -75,13 +75,13 @@ class HyperLogLog_AddingSpec extends FunSpec with Matchers with BeforeAndAfterEa
 
     it("should keep the maximum leading zeros when inserting multiple items in a bucket") {
       log.add(256)
-      log.buckets(0) shouldBe 31
+      log.buckets(0) shouldBe 63
 
       log.add(512)
-      log.buckets(0) shouldBe 31
+      log.buckets(0) shouldBe 63
 
       log.add(0)
-      log.buckets(0) shouldBe 32
+      log.buckets(0) shouldBe 64
     }
   }
 }
