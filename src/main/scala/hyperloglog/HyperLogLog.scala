@@ -3,6 +3,8 @@ package hyperloglog
 import java.lang.Long.numberOfLeadingZeros
 import java.lang.Math.{pow, max, log}
 
+import com.google.common.hash.Hashing._
+
 class HyperLogLog(numBucketBits: Int) {
   val bucketCount = 1 << numBucketBits
   val buckets = new Array[Int](bucketCount)
@@ -14,7 +16,7 @@ class HyperLogLog(numBucketBits: Int) {
 
   val biasCorrection = 1.0 / (2.0 * log(2) * (1.0 + (3.0 * log(2) - 1) / bucketCount))
 
-  def add(hashcode: Long): Unit = {
+  def addHash(hashcode: Long): Unit = {
     val bucketIndex = computeBucketIndex(hashcode)
     val bucketHash = computeBucketHash(hashcode)
     val leadZeros = computeNumberOfLeadingZeros(bucketHash)
@@ -22,6 +24,10 @@ class HyperLogLog(numBucketBits: Int) {
     buckets(bucketIndex) = max(leadZeros, buckets(bucketIndex))
 
     count += 1
+  }
+
+  def addItem(item: Any): Unit = {
+    addHash(murmur3_128().hashInt(item.hashCode).asLong)
   }
 
   def uniqueCount: Double = {
