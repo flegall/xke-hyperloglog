@@ -1,8 +1,9 @@
 package hyperloglog
 
+import hyperloglog.HyperLogLog.computeNumberOfLeadingZeros
 import org.scalatest.{BeforeAndAfterEach, FunSpec, Matchers}
 
-class HyperLogLog_AddingSpec extends FunSpec with Matchers with BeforeAndAfterEach {
+class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfterEach {
   var log: HyperLogLog= _
 
   override def beforeEach(): Unit = {
@@ -46,12 +47,12 @@ class HyperLogLog_AddingSpec extends FunSpec with Matchers with BeforeAndAfterEa
     }
 
     it("should compute the number of leading zeros") {
-      log.computeNumberOfLeadingZeros(0) shouldBe 64
-      log.computeNumberOfLeadingZeros(1) shouldBe 63
-      log.computeNumberOfLeadingZeros(2) shouldBe 62
+      computeNumberOfLeadingZeros(0) shouldBe 64
+      computeNumberOfLeadingZeros(1) shouldBe 63
+      computeNumberOfLeadingZeros(2) shouldBe 62
       // and so on...
       0 until 64 foreach { n =>
-        log.computeNumberOfLeadingZeros(1L << n) shouldBe 63 - n
+        computeNumberOfLeadingZeros(1L << n) shouldBe 63 - n
       }
     }
 

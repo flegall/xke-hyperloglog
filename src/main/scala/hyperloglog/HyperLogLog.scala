@@ -1,9 +1,10 @@
 package hyperloglog
 
 import java.lang.Long.numberOfLeadingZeros
-import java.lang.Math.{pow, max, log}
+import java.lang.Math.{log, max, pow}
 
 import com.google.common.hash.Hashing._
+import hyperloglog.HyperLogLog._
 
 class HyperLogLog(numBucketBits: Int) {
   val bucketCount = 1 << numBucketBits
@@ -30,18 +31,28 @@ class HyperLogLog(numBucketBits: Int) {
     addHash(murmur3_128().hashInt(item.hashCode).asLong)
   }
 
-  def uniqueCount: Double = {
-    val averageLeadingZeros = (buckets.sum / bucketCount) * biasCorrection
-    pow(2.0, averageLeadingZeros) * bucketCount
-  }
-
-  private[hyperloglog] def computeBucketIndex(hash: Long): Int = {
+  private[hyperloglog] def computeBucketIndex(hash: Long): Int =
     (hash & (bucketCount - 1)).toInt
-  }
 
-  private[hyperloglog] def computeBucketHash(hash: Long): Long = {
+  private[hyperloglog] def computeBucketHash(hash: Long): Long =
     hash >> numBucketBits
+
+  def logLogCount: Double =
+    pow(2.0, linearMean(buckets)) * biasCorrection
+
+  def hyperLogLogCount: Double = {
+    val sumOfPowers = buckets.map { n =>
+      pow(2.0, -n.toDouble)
+    }.sum
+
+    val m = buckets.length.toDouble
+    m * m * biasCorrection / sumOfPowers
   }
+}
+
+object HyperLogLog {
+  private[hyperloglog] def linearMean(buckets: Array[Int]): Double =
+    buckets.sum.toDouble / buckets.length.toDouble
 
   private[hyperloglog] def computeNumberOfLeadingZeros(bucketHash: Long): Int =
     numberOfLeadingZeros(bucketHash)

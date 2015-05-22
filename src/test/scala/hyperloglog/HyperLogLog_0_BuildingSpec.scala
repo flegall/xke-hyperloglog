@@ -2,7 +2,7 @@ package hyperloglog
 
 import org.scalatest.{FunSpec, Matchers}
 
-class HyperLogLog_BuildingSpec extends FunSpec with Matchers {
+class HyperLogLog_0_BuildingSpec extends FunSpec with Matchers {
 
   describe("When building HyperLogLog") {
 
