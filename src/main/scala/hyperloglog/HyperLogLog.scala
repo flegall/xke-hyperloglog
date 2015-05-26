@@ -41,7 +41,7 @@ class HyperLogLog(numBucketBits: Int) {
       pow(2.0, -n.toDouble)
     }.sum
 
-    bucketCount * bucketCount * biasCorrection / sumOfPowers
+    bucketCount * bucketCount * biasCorrection * sumOfPowers
   }
 }
 

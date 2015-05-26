@@ -73,12 +73,12 @@ class HyperLogLog_2_CountSpec extends FunSpec with Matchers with BeforeAndAfterE
   }
 
   describe("When counting with HyperLogLog") {
-    it("of 1337M/15M with 16384 buckets") {
+    it("of 1M/10M with 1024 buckets") {
       val uniqueItemsCount =  1000 * 1000
 
       val log = buildHyperLogLog(10, 10 * 1000 * 1000, uniqueItemsCount)
 
-      expectWithError(log.hyperLogLogCount, uniqueItemsCount, 100)
+      expectWithError(log.hyperLogLogCount, uniqueItemsCount, 10)
     }
   }
 
