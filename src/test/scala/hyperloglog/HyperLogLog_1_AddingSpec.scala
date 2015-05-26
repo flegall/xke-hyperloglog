@@ -31,21 +31,6 @@ class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfter
       // Well, you get the cycle :)
     }
 
-    it("should compute the hash within a bucket") {
-      0 until 256 foreach { n =>
-        log.computeBucketHash(n) shouldBe 0
-      }
-      256 until 512 foreach { n =>
-        log.computeBucketHash(n) shouldBe 1
-      }
-      512 until 768 foreach { n =>
-        log.computeBucketHash(n) shouldBe 2
-      }
-      768 until 1024 foreach { n =>
-        log.computeBucketHash(n) shouldBe 3
-      }
-    }
-
     it("should compute the number of leading zeros") {
       computeNumberOfLeadingZeros(0) shouldBe 64
       computeNumberOfLeadingZeros(1) shouldBe 63
