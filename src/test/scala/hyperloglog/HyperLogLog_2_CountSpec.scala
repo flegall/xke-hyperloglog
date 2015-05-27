@@ -41,7 +41,7 @@ class HyperLogLog_2_CountSpec extends FunSpec with Matchers with BeforeAndAfterE
     }
 
     it("of 1M/10M with 1024 buckets") {
-      val uniqueItemsCount =  1000 * 1000
+      val uniqueItemsCount = 1000 * 1000
       val log = buildHyperLogLog(10, 10 * 1000 * 1000, uniqueItemsCount)
 
       expectWithError(log.logLogCount, uniqueItemsCount, 3)
@@ -74,11 +74,43 @@ class HyperLogLog_2_CountSpec extends FunSpec with Matchers with BeforeAndAfterE
 
   describe("When counting with HyperLogLog") {
     it("of 1M/10M with 1024 buckets") {
-      val uniqueItemsCount =  1000 * 1000
+      val uniqueItemsCount = 1000 * 1000
 
       val log = buildHyperLogLog(10, 10 * 1000 * 1000, uniqueItemsCount)
 
       expectWithError(log.hyperLogLogCount, uniqueItemsCount, 10)
+    }
+
+    it("of 100K/10M with 1024 buckets") {
+      val uniqueItemsCount = 100 * 1000
+
+      val log = buildHyperLogLog(10, 10 * 1000 * 1000, uniqueItemsCount)
+
+      expectWithError(log.hyperLogLogCount, uniqueItemsCount, 10)
+    }
+
+    it("of 250K/10M with 1024 buckets") {
+      val uniqueItemsCount = 250 * 1000
+
+      val log = buildHyperLogLog(10, 10 * 1000 * 1000, uniqueItemsCount)
+
+      expectWithError(log.hyperLogLogCount, uniqueItemsCount, 10)
+    }
+
+    it("of 250K/10M with 256 buckets") {
+      val uniqueItemsCount = 250 * 1000
+
+      val log = buildHyperLogLog(8, 10 * 1000 * 1000, uniqueItemsCount)
+
+      expectWithError(log.hyperLogLogCount, uniqueItemsCount, 10)
+    }
+
+    it("of 1337M/15M with 16384 buckets") {
+      val uniqueItemsCount = 1337 * 1000
+
+      val log = buildHyperLogLog(14, 15 * 1000 * 1000, uniqueItemsCount)
+
+      expectWithError(log.hyperLogLogCount, uniqueItemsCount, 1)
     }
   }
 

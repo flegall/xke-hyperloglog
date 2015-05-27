@@ -61,10 +61,10 @@ class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfter
 
     it("should keep the maximum leading zeros when inserting multiple items in a bucket") {
       log.addHash(256)
-      log.buckets(0) shouldBe 63
+      log.buckets(0) shouldBe 55
 
       log.addHash(512)
-      log.buckets(0) shouldBe 63
+      log.buckets(0) shouldBe 55
 
       log.addHash(0)
       log.buckets(0) shouldBe 64

@@ -37,11 +37,11 @@ class HyperLogLog(numBucketBits: Int) {
     pow(2.0, linearMean(buckets)) * bucketCount * biasCorrection
 
   def hyperLogLogCount: Double = {
-    val sumOfPowers = buckets.map { n =>
-      pow(2.0, -n.toDouble)
+    val sumOfInverses = buckets.map { n =>
+      1.0 / pow(2.0, n + 1)
     }.sum
 
-    bucketCount * bucketCount * biasCorrection * sumOfPowers
+    bucketCount * bucketCount * biasCorrection / sumOfInverses
   }
 }
 
