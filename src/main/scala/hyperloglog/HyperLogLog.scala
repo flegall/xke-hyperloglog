@@ -15,13 +15,15 @@ class HyperLogLog(numBucketBits: Int) {
     buckets(a) = 0
   }
 
-  val biasCorrection = 1.0 / (2.0 * log(2) * (1.0 + (3.0 * log(2) - 1) / bucketCount))
+  val biasCorrectionForHyperLogLog = 1.0 / (2.0 * log(2) * (1.0 + (3.0 * log(2) - 1) / bucketCount))
+
+  val biasCorrectionForLogLog = 0.395
 
   def addHash(hashcode: Long): Unit = {
     val bucketIndex = computeBucketIndex(hashcode)
-    val leadZeros = computeNumberOfLeadingZeros(hashcode)
+    val firstOneRank = computeFirstOneRank(hashcode)
 
-    buckets(bucketIndex) = max(leadZeros, buckets(bucketIndex))
+    buckets(bucketIndex) = max(firstOneRank, buckets(bucketIndex))
 
     count += 1
   }
@@ -34,14 +36,14 @@ class HyperLogLog(numBucketBits: Int) {
     (hash & (bucketCount - 1)).toInt
 
   def logLogCount: Double =
-    pow(2.0, linearMean(buckets)) * bucketCount * biasCorrection
+    pow(2.0, linearMean(buckets)) * bucketCount * biasCorrectionForLogLog
 
   def hyperLogLogCount: Double = {
     val sumOfInverses = buckets.map { n =>
-      1.0 / pow(2.0, n + 1)
+      1.0 / pow(2.0, n)
     }.sum
 
-    bucketCount * bucketCount * biasCorrection / sumOfInverses
+    bucketCount * bucketCount * biasCorrectionForHyperLogLog / sumOfInverses
   }
 }
 
@@ -49,6 +51,6 @@ object HyperLogLog {
   private[hyperloglog] def linearMean(buckets: Array[Int]): Double =
     buckets.sum.toDouble / buckets.length.toDouble
 
-  private[hyperloglog] def computeNumberOfLeadingZeros(bucketHash: Long): Int =
-    numberOfLeadingZeros(bucketHash)
+  private[hyperloglog] def computeFirstOneRank(bucketHash: Long): Int =
+    numberOfLeadingZeros(bucketHash) + 1
 }

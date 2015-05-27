@@ -1,6 +1,6 @@
 package hyperloglog
 
-import hyperloglog.HyperLogLog.computeNumberOfLeadingZeros
+import hyperloglog.HyperLogLog.computeFirstOneRank
 import org.scalatest.{BeforeAndAfterEach, FunSpec, Matchers}
 
 class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfterEach {
@@ -31,17 +31,17 @@ class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfter
       // Well, you get the cycle :)
     }
 
-    it("should compute the number of leading zeros") {
-      computeNumberOfLeadingZeros(0) shouldBe 64
-      computeNumberOfLeadingZeros(1) shouldBe 63
-      computeNumberOfLeadingZeros(2) shouldBe 62
+    it("should compute the rank of the first 1 bit") {
+      computeFirstOneRank(0) shouldBe 65
+      computeFirstOneRank(1) shouldBe 64
+      computeFirstOneRank(2) shouldBe 63
       // and so on...
       0 until 64 foreach { n =>
-        computeNumberOfLeadingZeros(1L << n) shouldBe 63 - n
+        computeFirstOneRank(1L << n) shouldBe 64 - n
       }
     }
 
-    it("should store the leading zeros count to the first bucket") {
+    it("should store the rank to the first bucket") {
       log.addHash(0)
 
       0 until log.bucketCount foreach {
@@ -50,7 +50,7 @@ class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfter
       }
     }
 
-    it("should store the leading zeros count to the second bucket") {
+    it("should store the rank to the second bucket") {
       log.addHash(1)
 
       0 until log.bucketCount foreach {
@@ -59,15 +59,15 @@ class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfter
       }
     }
 
-    it("should keep the maximum leading zeros when inserting multiple items in a bucket") {
+    it("should keep the maximum rank when inserting multiple items in a bucket") {
       log.addHash(256)
-      log.buckets(0) shouldBe 55
+      log.buckets(0) shouldBe 56
 
       log.addHash(512)
-      log.buckets(0) shouldBe 55
+      log.buckets(0) shouldBe 56
 
       log.addHash(0)
-      log.buckets(0) shouldBe 64
+      log.buckets(0) shouldBe 65
     }
   }
 }
