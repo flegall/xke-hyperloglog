@@ -16,14 +16,13 @@ class HyperLogLog(registersBit: Int) {
   }
 
   val biasCorrectionForHyperLogLog = 1.0 / (2.0 * log(2) * (1.0 + (3.0 * log(2) - 1) / n))
-
   val biasCorrectionForLogLog = 0.395
 
   def addHash(hashcode: Long): Unit = {
-    val bucketIndex = computeRegisterIndex(hashcode, n)
+    val registerIndex = computeRegisterIndex(hashcode, n)
     val firstOneRank = computeFirstOneRank(hashcode)
 
-    registers(bucketIndex) = max(firstOneRank, registers(bucketIndex))
+    registers(registerIndex) = max(firstOneRank, registers(registerIndex))
 
     count += 1
   }
