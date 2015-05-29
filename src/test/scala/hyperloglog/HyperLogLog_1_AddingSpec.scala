@@ -31,6 +31,15 @@ class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfter
       // Well, you get the cycle :)
     }
 
+    it("should compute the bucket index when used with a different number of registers") {
+      0 until 1024 foreach { i =>
+        computeRegisterIndex(i, 1024) shouldBe i
+      }
+      1024 until 2048 foreach { i =>
+        computeRegisterIndex(i, 1024) shouldBe i - 1024
+      }
+    }
+
     it("should compute the rank of the first 1 bit") {
       computeFirstOneRank(0) shouldBe 65
       computeFirstOneRank(1) shouldBe 64
@@ -60,14 +69,14 @@ class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfter
     }
 
     it("should keep the maximum rank when inserting multiple items in a bucket") {
+      log.addHash(512)
+      log.registers(0) shouldBe 55
+
+      log.addHash(1024)
+      log.registers(0) shouldBe 55
+
       log.addHash(256)
       log.registers(0) shouldBe 56
-
-      log.addHash(512)
-      log.registers(0) shouldBe 56
-
-      log.addHash(0)
-      log.registers(0) shouldBe 65
     }
   }
 }

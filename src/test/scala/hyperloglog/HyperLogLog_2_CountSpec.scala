@@ -129,8 +129,8 @@ class HyperLogLog_2_CountSpec extends FunSpec with Matchers with BeforeAndAfterE
     }
   }
 
-  def buildHyperLogLog(numBucketBits: Int, universeSize: Int, cardinality: Int): HyperLogLog = {
-    val log = new HyperLogLog(numBucketBits)
+  def buildHyperLogLog(registersBit: Int, universeSize: Int, cardinality: Int): HyperLogLog = {
+    val log = new HyperLogLog(registersBit)
 
     val random = new Random()
     0 until universeSize foreach { n =>
