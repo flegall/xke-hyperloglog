@@ -6,24 +6,24 @@ import java.lang.Math.{log, max, pow}
 import com.google.common.hash.Hashing._
 import hyperloglog.HyperLogLog._
 
-class HyperLogLog(numBucketBits: Int) {
-  val bucketCount = 1 << numBucketBits
-  val buckets = new Array[Int](bucketCount)
+class HyperLogLog(registersBit: Int) {
+  val n = 1 << registersBit
+  val registers = new Array[Int](n)
   var count = 0
 
-  for (a <- 0 until bucketCount) {
-    buckets(a) = 0
+  for (a <- 0 until n) {
+    registers(a) = 0
   }
 
-  val biasCorrectionForHyperLogLog = 1.0 / (2.0 * log(2) * (1.0 + (3.0 * log(2) - 1) / bucketCount))
+  val biasCorrectionForHyperLogLog = 1.0 / (2.0 * log(2) * (1.0 + (3.0 * log(2) - 1) / n))
 
   val biasCorrectionForLogLog = 0.395
 
   def addHash(hashcode: Long): Unit = {
-    val bucketIndex = computeBucketIndex(hashcode)
+    val bucketIndex = computeRegisterIndex(hashcode, n)
     val firstOneRank = computeFirstOneRank(hashcode)
 
-    buckets(bucketIndex) = max(firstOneRank, buckets(bucketIndex))
+    registers(bucketIndex) = max(firstOneRank, registers(bucketIndex))
 
     count += 1
   }
@@ -32,18 +32,13 @@ class HyperLogLog(numBucketBits: Int) {
     addHash(murmur3_128().hashInt(item.hashCode).asLong)
   }
 
-  private[hyperloglog] def computeBucketIndex(hash: Long): Int =
-    (hash & (bucketCount - 1)).toInt
-
   def logLogCount: Double =
-    pow(2.0, linearMean(buckets)) * bucketCount * biasCorrectionForLogLog
+    pow(2.0, linearMean(registers)) * n * biasCorrectionForLogLog
 
   def hyperLogLogCount: Double = {
-    val sumOfInverses = buckets.map { n =>
-      1.0 / pow(2.0, n)
+    n * n * biasCorrectionForHyperLogLog / registers.map { i =>
+      1.0 / pow(2.0, i)
     }.sum
-
-    bucketCount * bucketCount * biasCorrectionForHyperLogLog / sumOfInverses
   }
 }
 
@@ -53,4 +48,7 @@ object HyperLogLog {
 
   private[hyperloglog] def computeFirstOneRank(bucketHash: Long): Int =
     numberOfLeadingZeros(bucketHash) + 1
+
+  private[hyperloglog] def computeRegisterIndex(hash: Long, n: Int): Int =
+    (hash & (n - 1)).toInt
 }
