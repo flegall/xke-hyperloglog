@@ -18,7 +18,7 @@ class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfter
       log.count shouldBe 1
     }
 
-    it("should compute the bucket index") {
+    it("should compute the registers index") {
       0 until 256 foreach { i =>
         computeRegisterIndex(i, 256) shouldBe i
       }
@@ -31,7 +31,7 @@ class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfter
       // Well, you get the cycle :)
     }
 
-    it("should compute the bucket index when used with a different number of registers") {
+    it("should compute the registers index when used with a different number of registers") {
       0 until 1024 foreach { i =>
         computeRegisterIndex(i, 1024) shouldBe i
       }
@@ -50,7 +50,7 @@ class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfter
       }
     }
 
-    it("should store the rank to the first bucket") {
+    it("should store the rank to the first registers") {
       log.addHash(0)
 
       0 until log.n foreach {
@@ -59,7 +59,7 @@ class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfter
       }
     }
 
-    it("should store the rank to the second bucket") {
+    it("should store the rank to the second registers") {
       log.addHash(1)
 
       0 until log.n foreach {
@@ -68,7 +68,7 @@ class HyperLogLog_1_AddingSpec extends FunSpec with Matchers with BeforeAndAfter
       }
     }
 
-    it("should keep the maximum rank when inserting multiple items in a bucket") {
+    it("should keep the maximum rank when inserting multiple items in a registers") {
       log.addHash(512)
       log.registers(0) shouldBe 55
 

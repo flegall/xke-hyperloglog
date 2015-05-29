@@ -6,7 +6,7 @@ class HyperLogLog_0_BuildingSpec extends FunSpec with Matchers {
 
   describe("When building HyperLogLog") {
 
-    it("should build an HyperLogLog of 4 buckets") {
+    it("should build an HyperLogLog of 4 registers") {
       val log = new HyperLogLog(2)
 
       log.registers should have size 4
@@ -15,7 +15,7 @@ class HyperLogLog_0_BuildingSpec extends FunSpec with Matchers {
       log.biasCorrectionForHyperLogLog shouldBe 0.56 +- 0.01
     }
 
-    it("should build an HyperLogLog of 64 buckets") {
+    it("should build an HyperLogLog of 64 registers") {
       val log = new HyperLogLog(6)
 
       log.registers should have size 64
@@ -24,7 +24,7 @@ class HyperLogLog_0_BuildingSpec extends FunSpec with Matchers {
       log.biasCorrectionForHyperLogLog shouldBe 0.70 +- 0.01
     }
 
-    it("should build an HyperLogLog of 2048 buckets") {
+    it("should build an HyperLogLog of 2048 registers") {
       val log = new HyperLogLog(11)
 
       log.registers should have size 2048
