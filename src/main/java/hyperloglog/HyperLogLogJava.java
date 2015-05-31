@@ -2,11 +2,8 @@ package hyperloglog;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.google.common.base.Function;
 
-import static com.google.common.collect.Lists.transform;
-import static java.lang.Math.max;
-import static java.lang.Math.pow;
+import scala.NotImplementedError;
 
 public class HyperLogLogJava {
     private final int n;
@@ -18,12 +15,7 @@ public class HyperLogLogJava {
 
 
     public HyperLogLogJava(int registersBit) {
-        this.n = 1 << registersBit;
-        for (int i = 0; i < n; i++) {
-            registers.add(0);
-        }
-        biasCorrectionForHyperLogLog = 1.0 / (2.0 * Math.log(2) * (1.0 + (3.0 * Math.log(2) - 1) / (double) n));
-        biasCorrectionForLogLog = 0.395;
+        throw new NotImplementedError();
     }
 
     public int getN() {
@@ -47,46 +39,26 @@ public class HyperLogLogJava {
     }
 
     public void addHash(long hashcode) {
-        int registerIndex = computeRegisterIndex(hashcode, n);
-        int firstOneRank = computeFirstOneRank(hashcode);
-
-        registers.set(registerIndex, max(firstOneRank, registers.get(registerIndex)));
-
-        count += 1;
+        throw new NotImplementedError();
     }
 
     public double getLogLogCount() {
-        return pow(2.0, linearMean(registers)) * n * biasCorrectionForLogLog;
+        throw new NotImplementedError();
     }
 
     public double getHyperLogLogCount() {
-        double nDouble = n;
-        List<Double> inverses = transform(registers, new Function<Integer, Double>() {
-            @Override
-            public Double apply(Integer value) {
-                return 1.0 / pow(2.0, value);
-            }
-        });
-        double sumOfInverses = 0;
-        for (Double inverse : inverses) {
-            sumOfInverses += inverse;
-        }
-        return nDouble * nDouble * biasCorrectionForHyperLogLog / sumOfInverses;
+        throw new NotImplementedError();
     }
 
     static int computeFirstOneRank(long bucketHash) {
-        return Long.numberOfLeadingZeros(bucketHash) + 1;
+        throw new NotImplementedError();
     }
 
     static int computeRegisterIndex(long hash, int n) {
-        return (int) hash & (n - 1);
+        throw new NotImplementedError();
     }
 
    static double linearMean(List<Integer> registers) {
-       double result = 0;
-       for (Integer register : registers) {
-           result += register.doubleValue();
-       }
-       return result / (double) registers.size();
+       throw new NotImplementedError();
    }
 }
