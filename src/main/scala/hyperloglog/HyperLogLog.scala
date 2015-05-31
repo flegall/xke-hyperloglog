@@ -24,9 +24,9 @@ class HyperLogLog(registersBit: Int) {
 }
 
 object HyperLogLog {
-  private[hyperloglog] def linearMean(buckets: Array[Int]): Double = ???
+  private[hyperloglog] def linearMean(registers: Array[Int]): Double = ???
 
-  private[hyperloglog] def computeFirstOneRank(bucketHash: Long): Int = ???
+  private[hyperloglog] def computeFirstOneRank(hash: Long): Int = ???
 
   private[hyperloglog] def computeRegisterIndex(hash: Long, n: Int): Int = ???
 }
