@@ -1,30 +1,23 @@
 package hyperloglog
 
-import java.lang.Long.numberOfLeadingZeros
-import java.lang.Math.{log, max, pow}
+import java.util
 
 import com.google.common.hash.Hashing._
-import hyperloglog.HyperLogLog._
+
+import scala.collection.JavaConverters._
+
 
 class HyperLogLog(registersBit: Int) {
-  val n = 1 << registersBit
-  val registers = new Array[Int](n)
-  var count = 0
+  val hyperLogLogJava = new HyperLogLogJava(registersBit)
+  def n = hyperLogLogJava.getN
+  def registers:Array[Int] = hyperLogLogJava.getRegisters.asScala.toArray[Integer].map { _.intValue}
+  def count = hyperLogLogJava.getCount
 
-  for (a <- 0 until n) {
-    registers(a) = 0
-  }
-
-  val biasCorrectionForHyperLogLog = 1.0 / (2.0 * log(2) * (1.0 + (3.0 * log(2) - 1) / n))
-  val biasCorrectionForLogLog = 0.395
+  def biasCorrectionForHyperLogLog = hyperLogLogJava.getBiasCorrectionForHyperLogLog
+  def biasCorrectionForLogLog = hyperLogLogJava.getBiasCorrectionForLogLog
 
   def addHash(hashcode: Long): Unit = {
-    val registerIndex = computeRegisterIndex(hashcode, n)
-    val firstOneRank = computeFirstOneRank(hashcode)
-
-    registers(registerIndex) = max(firstOneRank, registers(registerIndex))
-
-    count += 1
+    hyperLogLogJava.addHash(hashcode)
   }
 
   def addItem(item: Any): Unit = {
@@ -32,22 +25,23 @@ class HyperLogLog(registersBit: Int) {
   }
 
   def logLogCount: Double =
-    pow(2.0, linearMean(registers)) * n * biasCorrectionForLogLog
+    hyperLogLogJava.getLogLogCount
 
   def hyperLogLogCount: Double = {
-    n * n * biasCorrectionForHyperLogLog / registers.map { i =>
-      1.0 / pow(2.0, i)
-    }.sum
+    hyperLogLogJava.getHyperLogLogCount
   }
 }
 
 object HyperLogLog {
-  private[hyperloglog] def linearMean(buckets: Array[Int]): Double =
-    buckets.sum.toDouble / buckets.length.toDouble
+  private[hyperloglog] def linearMean(buckets: Array[Int]): Double = {
+    val integers = new util.ArrayList[Integer]()
+    buckets.foreach(integers.add(_))
+    HyperLogLogJava.linearMean(integers)
+  }
 
   private[hyperloglog] def computeFirstOneRank(bucketHash: Long): Int =
-    numberOfLeadingZeros(bucketHash) + 1
+    HyperLogLogJava.computeFirstOneRank(bucketHash)
 
   private[hyperloglog] def computeRegisterIndex(hash: Long, n: Int): Int =
-    (hash & (n - 1)).toInt
+   HyperLogLogJava.computeRegisterIndex(hash, n)
 }
