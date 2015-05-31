@@ -50,7 +50,7 @@ public class HyperLogLogJava {
         throw new NotImplementedError();
     }
 
-    static int computeFirstOneRank(long bucketHash) {
+    static int computeFirstOneRank(long register) {
         throw new NotImplementedError();
     }
 

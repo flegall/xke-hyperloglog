@@ -33,14 +33,14 @@ class HyperLogLog(registersBit: Int) {
 }
 
 object HyperLogLog {
-  private[hyperloglog] def linearMean(buckets: Array[Int]): Double = {
+  private[hyperloglog] def linearMean(registers: Array[Int]): Double = {
     val integers = new util.ArrayList[Integer]()
-    buckets.foreach(integers.add(_))
+    registers.foreach(integers.add(_))
     HyperLogLogJava.linearMean(integers)
   }
 
-  private[hyperloglog] def computeFirstOneRank(bucketHash: Long): Int =
-    HyperLogLogJava.computeFirstOneRank(bucketHash)
+  private[hyperloglog] def computeFirstOneRank(hash: Long): Int =
+    HyperLogLogJava.computeFirstOneRank(hash)
 
   private[hyperloglog] def computeRegisterIndex(hash: Long, n: Int): Int =
    HyperLogLogJava.computeRegisterIndex(hash, n)
