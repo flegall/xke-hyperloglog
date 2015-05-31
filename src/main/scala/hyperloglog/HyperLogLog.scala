@@ -42,11 +42,11 @@ class HyperLogLog(registersBit: Int) {
 }
 
 object HyperLogLog {
-  private[hyperloglog] def linearMean(buckets: Array[Int]): Double =
-    buckets.sum.toDouble / buckets.length.toDouble
+  private[hyperloglog] def linearMean(registers: Array[Int]): Double =
+    registers.sum.toDouble / registers.length.toDouble
 
-  private[hyperloglog] def computeFirstOneRank(bucketHash: Long): Int =
-    numberOfLeadingZeros(bucketHash) + 1
+  private[hyperloglog] def computeFirstOneRank(hash: Long): Int =
+    numberOfLeadingZeros(hash) + 1
 
   private[hyperloglog] def computeRegisterIndex(hash: Long, n: Int): Int =
     (hash & (n - 1)).toInt
